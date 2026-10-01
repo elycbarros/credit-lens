@@ -245,6 +245,7 @@ def main(modelo: str = "lgbm", versao: int = 1) -> None:
         for k, v in entrada.items()
     }
 
+    historico = [e for e in historico if e.get("arquivo") != entrada["arquivo"]]
     historico.append(entrada)
     metricas_path.write_text(json.dumps(historico, indent=2, ensure_ascii=False))
     logger.info("Métricas salvas em %s", metricas_path)

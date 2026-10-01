@@ -1,7 +1,6 @@
 # Credit-Lens 🔍
 
 [![CI](https://github.com/elycbarros/credit-lens/actions/workflows/ci.yml/badge.svg)](https://github.com/elycbarros/credit-lens/actions)
-[![Coverage](https://img.shields.io/badge/coverage-93.6%25-brightgreen.svg)](https://pytest.org)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com)
 [![DuckDB](https://img.shields.io/badge/DuckDB-1.0%2B-FFF000.svg)](https://duckdb.org)

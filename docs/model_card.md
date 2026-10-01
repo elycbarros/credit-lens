@@ -54,7 +54,7 @@ O pipeline DuckDB processou 307.511 clientes e construiu 32 preditores numérico
 ## Monitoramento e Estabilidade (PSI)
 
 A estabilidade populacional entre a safra histórica e a safra recente (simulada via proxy temporal em `DAYS_BIRTH`) registrou:
-- Variáveis cadastrais de idade/tempo de emprego com drift esperado (`DAYS_BIRTH` PSI alto como esperado no proxy).
+- Variáveis cadastrais de idade/tempo de emprego com PSI alto (`DAYS_BIRTH`, `DAYS_EMPLOYED`). **Atenção:** a partição "safra histórica x recente" é feita ordenando pela própria `DAYS_BIRTH`, então o PSI dessa variável é artefato do proxy e **não mede drift real**; não tratar como alerta de retreino.
 - Variáveis transacionais e de birô estáveis (`bureau_utilizacao_media` PSI = 0.052, `prev_valor_pedido_medio` PSI = 0.093).
 - Relatório automatizado disponível em `reports/monitoramento.csv`.
 

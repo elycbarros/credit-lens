@@ -1,8 +1,9 @@
 """Testes de contrato da API Credit-Lens."""
 
+import pytest
 from fastapi.testclient import TestClient
 
-from credit_lens.api import app
+from credit_lens.api import MODELS, app
 
 client = TestClient(app)
 
@@ -64,6 +65,10 @@ def test_predict_com_modelo_mockado():
         api_mod._state.clear()
 
 
+@pytest.mark.skipif(
+    not list(MODELS.glob("modelo_lgbm_*.joblib")),
+    reason="modelo treinado ausente (models/*.joblib não é versionado); rode `make train`",
+)
 def test_lifespan_e_predicao_com_modelo_real():
     """Valida que o startup com lifespan carrega o modelo treinado de disco e executa predição real."""
     with TestClient(app) as live_client:

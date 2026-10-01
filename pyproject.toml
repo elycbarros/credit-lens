@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "credit-lens"
+version = "0.1.0"
+description = "Risco de crédito de ponta a ponta: SQL + modelo + API + dashboard."
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["._*", "**/._*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]
+ignore = ["E501", "UP045"]  # E501: linhas longas em SQL; UP045: manter Optional[] para compatibilidade Python 3.9
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "dados: testes que requerem os CSVs do Kaggle em data/raw/",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "src/credit_lens/train.py",
+    "src/credit_lens/features.py",
+]
+
+[tool.coverage.report]
+fail_under = 80
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]

@@ -1,0 +1,55 @@
+[
+  {
+    "versao": 1,
+    "arquivo": "modelo_logistica_v1.joblib",
+    "modelo": "logistica",
+    "conjunto": "validacao",
+    "roc_auc": 0.677501380353968,
+    "gini": 0.355002760707936,
+    "ks": 0.25841067271424284,
+    "pr_auc": 0.15243925017968563,
+    "brier": 0.22678364989398708
+  },
+  {
+    "versao": 1,
+    "arquivo": "modelo_logistica_v1.joblib",
+    "modelo": "logistica",
+    "conjunto": "validacao",
+    "roc_auc": 0.677501380353968,
+    "gini": 0.355002760707936,
+    "ks": 0.25841067271424284,
+    "pr_auc": 0.15243925017968563,
+    "brier": 0.22678364989398708,
+    "teste_roc_auc": 0.6810626327966125,
+    "teste_gini": 0.362125265593225,
+    "teste_ks": 0.2667270441441974,
+    "teste_pr_auc": 0.16007888366861278,
+    "teste_brier": 0.22560747939011966
+  },
+  {
+    "versao": 1,
+    "arquivo": "modelo_lgbm_v1.joblib",
+    "modelo": "lgbm",
+    "conjunto": "validacao",
+    "cv_auc_mean": 0.7002163339512851,
+    "cv_auc_std": 0.0036232951912041557,
+    "best_params": {
+      "clf__subsample": 0.7,
+      "clf__num_leaves": 31,
+      "clf__n_estimators": 800,
+      "clf__min_child_samples": 100,
+      "clf__learning_rate": 0.02,
+      "clf__colsample_bytree": 0.7
+    },
+    "roc_auc": 0.7027585205969431,
+    "gini": 0.4055170411938862,
+    "ks": 0.30063658528102544,
+    "pr_auc": 0.1783076080305735,
+    "brier": 0.2047013204721202,
+    "teste_roc_auc": 0.7093421953784809,
+    "teste_gini": 0.41868439075696173,
+    "teste_ks": 0.30967061791855366,
+    "teste_pr_auc": 0.1870520988747872,
+    "teste_brier": 0.20314019998658925
+  }
+]

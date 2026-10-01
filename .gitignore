@@ -1,0 +1,24 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+
+# Dados e artefatos (nunca versionar dados, apenas estrutura de pastas)
+data/raw/*
+!data/raw/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+*.duckdb
+*.parquet
+models/*.joblib
+bi/*.csv
+
+# macOS / volumes externos
+.DS_Store
+._*

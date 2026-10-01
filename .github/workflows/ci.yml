@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        run: ruff check src tests
+
+      - name: Testes com cobertura
+        run: pytest -q --cov=src --cov-report=xml
+
+      - name: Upload cobertura
+        if: matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.xml
+          fail_ci_if_error: false
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: test
+    # Só builda o Docker no push para main (não em PRs de feature)
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build da imagem Docker
+        run: docker build -t credit-lens:ci .
+
+      - name: Smoke test do container
+        run: |
+          docker run --rm -d --name cl-test -p 8000:8000 credit-lens:ci
+          sleep 5
+          curl --fail http://localhost:8000/health
+          docker stop cl-test

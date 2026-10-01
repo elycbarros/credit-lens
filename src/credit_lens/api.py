@@ -112,16 +112,22 @@ class EntradaPredicao(BaseModel):
 
 class SaidaPredicao(BaseModel):
     probabilidade_inadimplencia: float = Field(
-        ..., ge=0.0, le=1.0, description="Probabilidade estimada de inadimplência (0–1)."
+        ..., ge=0.0, le=1.0, description="Probabilidade calibrada de inadimplência (0–1). Só é uma probabilidade se o modelo foi calibrado (`calibrado: true` em /model-info)."
     )
     faixa_risco: str = Field(..., description="Classificação: baixo | médio | alto.")
     modelo: str = Field(..., description="Nome do arquivo de modelo utilizado.")
 
 
+# Cortes sobre a probabilidade CALIBRADA (taxa base ~8%). Referência nos decis do teste:
+# decis 6-10 têm inadimplência < 6%; decis 1-2 ficam acima de ~14%.
+CORTE_RISCO_BAIXO = 0.06
+CORTE_RISCO_ALTO = 0.15
+
+
 def _classificar_risco(prob: float) -> str:
-    if prob < 0.15:
+    if prob < CORTE_RISCO_BAIXO:
         return "baixo"
-    if prob < 0.40:
+    if prob < CORTE_RISCO_ALTO:
         return "médio"
     return "alto"
 

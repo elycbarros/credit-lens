@@ -82,7 +82,7 @@ git init && git add . && git commit -m "chore: esqueleto Credit-Lens (fase 0)"
 ## ⬜ Fase 4 — Avaliação e validação (1–2 dias)
 - ⬜ Rodar `resumo_metricas` em validação e teste para os dois modelos.
 - ⬜ Tabela por **decis de score** (n, inadimplência %, lift acumulado) em `evaluate.py` + teste.
-- ⬜ Curva de calibração e Brier; calibrar (`CalibratedClassifierCV`) se necessário.
+- ✅ Curva de calibração e Brier; calibração isotônica aplicada (Brier 0,2031 → 0,0705).
 - ⬜ Ponto de corte: curva aprovação × inadimplência esperada, com custos **fictícios e rotulados como hipótese**.
 - ⬜ Sanidade: AUC esperado ~0,73–0,79; **AUC > 0,85 = suspeitar de vazamento**.
 - ⬜ Preencher `docs/model_card.md` com números reais.
@@ -113,8 +113,8 @@ git init && git add . && git commit -m "chore: esqueleto Credit-Lens (fase 0)"
 
 ---
 
-## ⬜ Fase 7 — Dashboard Tableau Public (1–2 dias)
-- ⬜ `scripts/exportar_para_bi.py` (mesmo padrão do Power-Monitor): decis, métricas, PSI, importância → `bi/`.
+## 🟡 Fase 7 — Dashboard Tableau Public (1–2 dias) — exportação pronta; falta montar e publicar no Tableau
+- ✅ `scripts/exportar_para_bi.py` (mesmo padrão do Power-Monitor): decis, métricas, PSI, importância → `bi/`.
 - ⬜ Páginas: **Performance** (decis/KS), **Risco por segmento**, **Monitoramento** (PSI), **Qualidade dos dados**.
 - ⬜ Parâmetro de ponto de corte no Tableau.
 - ⬜ Publicar (⚠️ público: só dados agregados) e linkar no README; completar `docs/dashboard.md` com valores de conferência.

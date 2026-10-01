@@ -64,3 +64,16 @@ A estabilidade populacional entre a safra histórica e a safra recente (simulada
 
 - **Finalidade Exclusiva**: Projeto demonstrativo de engenharia de dados, machine learning e MLOps para portfólio.
 - **Não Aplicabilidade**: Não deve ser utilizado para decisões reais de concessão de crédito a pessoas físicas sem auditoria de viés, conformidade regulatória (LGPD / BACEN) e validação em dados de produção.
+
+## Calibração de Probabilidades
+
+Os modelos usam pesos de classe (inadimplência ~8%), o que melhora a ordenação, mas distorce o score: a média prevista ficava em ~0,45. Aplicou-se **calibração isotônica ajustada no conjunto de validação** (`credit_lens/calibracao.py`); o teste holdout permaneceu intocado.
+
+| Teste holdout | LightGBM bruto | LightGBM calibrado |
+|---|---|---|
+| ROC-AUC | 0,7093 | 0,7085 |
+| Brier | 0,2031 | **0,0705** |
+| ECE (10 faixas) | 0,346 | **0,0026** |
+| Prob. média prevista / taxa observada | ~0,45 / 8,07% | 8,05% / 8,07% |
+
+A ordenação (AUC/KS) praticamente não muda; o ganho está em a probabilidade passar a representar a taxa observada. Limitação: a calibração vale para esta base e partição; em dados novos exige recalibração periódica.

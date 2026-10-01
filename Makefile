@@ -1,7 +1,7 @@
 PY ?= python3
 export PYTHONPATH := src:$(PYTHONPATH)
 
-.PHONY: install test lint lint-fix features train monitor api api-docker
+.PHONY: bi install test lint lint-fix features train monitor api api-docker
 
 install:
 	$(PY) -m pip install -r requirements-dev.txt
@@ -32,3 +32,6 @@ api:
 
 api-docker:
 	docker build -t credit-lens . && docker run --rm -p 8000:8000 credit-lens
+
+bi:
+	$(PY) scripts/exportar_para_bi.py

@@ -29,6 +29,7 @@ from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
+from credit_lens.calibracao import calibrar, ece
 from credit_lens.evaluate import resumo_metricas
 from credit_lens.split import split_estratificado
 
@@ -191,8 +192,25 @@ def treinar_lgbm(
     return best, metricas
 
 
-def main(modelo: str = "lgbm", versao: int = 1) -> None:
-    """Ponto de entrada: treina e salva o modelo escolhido."""
+def registrar_metricas(arquivo: str, versao: int, metricas: dict) -> None:
+    """Grava/atualiza a entrada do modelo em ``models/metricas.json`` (uma por arquivo)."""
+    metricas_path = MODELS / "metricas.json"
+    historico: list = []
+    if metricas_path.exists():
+        historico = json.loads(metricas_path.read_text())
+
+    def _py(e: dict) -> dict:
+        return {k: (v.item() if isinstance(v, (np.integer, np.floating)) else v) for k, v in e.items()}
+
+    entrada = _py({"versao": versao, "arquivo": arquivo, **metricas})
+    historico = [_py(e) for e in historico if e.get("arquivo") != arquivo]
+    historico.append(entrada)
+    metricas_path.write_text(json.dumps(historico, indent=2, ensure_ascii=False))
+    logger.info("Métricas salvas em %s", metricas_path)
+
+
+def main(modelo: str = "lgbm", versao: int = 1, calibrar_probabilidades: bool = True) -> None:
+    """Ponto de entrada: treina, calibra (padrão) e salva o modelo escolhido."""
     MODELS.mkdir(parents=True, exist_ok=True)
 
     df = _carregar_dataset()
@@ -209,6 +227,16 @@ def main(modelo: str = "lgbm", versao: int = 1) -> None:
     else:
         raise ValueError(f"Modelo desconhecido: {modelo!r}. Use 'logistica' ou 'lgbm'.")
 
+    extras: dict = {"calibrado": False}
+    if calibrar_probabilidades:
+        brier_antes = resumo_metricas(y_teste, estimador.predict_proba(X_teste)[:, 1])["brier"]
+        estimador = calibrar(estimador, X_val, y_val)
+        extras = {
+            "calibrado": True,
+            "calibracao": "isotonica (ajustada na validação)",
+            "teste_brier_antes_calibracao": brier_antes,
+        }
+
     # Avaliação no conjunto de teste holdout
     y_prob_teste = estimador.predict_proba(X_teste)[:, 1]
     metricas_teste = resumo_metricas(y_teste, y_prob_teste)
@@ -221,6 +249,8 @@ def main(modelo: str = "lgbm", versao: int = 1) -> None:
         "teste_ks": metricas_teste["ks"],
         "teste_pr_auc": metricas_teste["pr_auc"],
         "teste_brier": metricas_teste["brier"],
+        "teste_ece": ece(y_teste, y_prob_teste),
+        **extras,
     }
 
     # Salva o modelo versionado (fora do Git via .gitignore)
@@ -228,27 +258,7 @@ def main(modelo: str = "lgbm", versao: int = 1) -> None:
     joblib.dump(estimador, modelo_path)
     logger.info("Modelo salvo em %s", modelo_path)
 
-    # Salva métricas como JSON (versionado para rastreabilidade)
-    metricas_path = MODELS / "metricas.json"
-    # Carrega métricas existentes e adiciona/atualiza entrada
-    historico: list = []
-    if metricas_path.exists():
-        historico = json.loads(metricas_path.read_text())
-    entrada = {"versao": versao, "arquivo": modelo_path.name, **metricas}
-    # Converte tipos numpy para JSON
-    historico = [
-        {k: (v.item() if isinstance(v, (np.integer, np.floating)) else v) for k, v in e.items()}
-        for e in historico
-    ]
-    entrada = {
-        k: (v.item() if isinstance(v, (np.integer, np.floating)) else v)
-        for k, v in entrada.items()
-    }
-
-    historico = [e for e in historico if e.get("arquivo") != entrada["arquivo"]]
-    historico.append(entrada)
-    metricas_path.write_text(json.dumps(historico, indent=2, ensure_ascii=False))
-    logger.info("Métricas salvas em %s", metricas_path)
+    registrar_metricas(modelo_path.name, versao, metricas)
 
 
 if __name__ == "__main__":
@@ -256,5 +266,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Treina modelo de risco de crédito.")
     parser.add_argument("--modelo", default="lgbm", choices=["logistica", "lgbm"])
     parser.add_argument("--versao", type=int, default=1)
+    parser.add_argument(
+        "--sem-calibracao", action="store_true", help="não calibrar as probabilidades"
+    )
     args = parser.parse_args()
-    main(modelo=args.modelo, versao=args.versao)
+    main(modelo=args.modelo, versao=args.versao, calibrar_probabilidades=not args.sem_calibracao)

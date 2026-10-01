@@ -22,7 +22,15 @@ Avaliação em conjunto de teste holdout independente (15% da base, 46.127 clien
 | **LightGBM (Tuned 5-fold CV)** | **0.7093** | **0.4187** | **0.3097** | **0.1871** | **0.2031** | **Campeão** |
 
 * **Validação Cruzada**: LightGBM obteve **CV ROC-AUC médio de 0.7002 ± 0.0036** ao longo dos 5 folds estratificados.
+* **Calibração:** os modelos são treinados com pesos de classe, então o score bruto (média ~0,45) não é probabilidade (taxa real ~8%). A calibração isotônica, ajustada na validação, leva a probabilidade média prevista a 8,05% (observada: 8,07%), com **Brier 0,2031 → 0,0705** e **ECE 0,346 → 0,003**, e ROC-AUC praticamente igual (0,7085). A API usa o modelo calibrado (`modelo_lgbm_v2.joblib`).
+* **Faixas de risco (API):** baixo < 6%, médio 6–15%, alto ≥ 15% de probabilidade calibrada (`CORTE_RISCO_BAIXO/ALTO` em `api.py`).
 * **Model Card Completo**: Veja hiperparâmetros, curvas e detalhes em [`docs/model_card.md`](docs/model_card.md).
+
+---
+
+## 📈 Dashboard (Tableau Public)
+
+Exportação de dados agregados para BI com `make bi` (`scripts/exportar_para_bi.py`). Estrutura das páginas, valores de conferência e cuidados de interpretação em [`docs/dashboard.md`](docs/dashboard.md). Link público: _em breve_.
 
 ---
 
@@ -75,8 +83,11 @@ make test
 # 3. Treina o baseline de Regressão Logística
 make train-logistica
 
-# 4. Treina o campeão LightGBM com tuning 5-fold CV
+# 4. Treina o campeão LightGBM com tuning 5-fold CV (já calibra as probabilidades)
 make train
+
+# 4b. Alternativa: calibrar um modelo já treinado, sem retreinar
+# python -m credit_lens.calibracao --modelo lgbm --origem 1 --destino 2
 
 # 5. Gera relatório de monitoramento populacional (PSI)
 make monitor
@@ -107,9 +118,9 @@ curl -X POST "http://localhost:8000/predict" \
 Resposta:
 ```json
 {
-  "probabilidade_inadimplencia": 0.428401,
-  "faixa_risco": "alto",
-  "modelo": "modelo_lgbm_v1.joblib"
+  "probabilidade_inadimplencia": 0.064706,
+  "faixa_risco": "médio",
+  "modelo": "modelo_lgbm_v2.joblib"
 }
 ```
 

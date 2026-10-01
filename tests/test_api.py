@@ -54,7 +54,7 @@ def test_predict_com_modelo_mockado():
         assert r.status_code == 200
         data = r.json()
         assert data["probabilidade_inadimplencia"] == 0.15
-        assert data["faixa_risco"] == "médio"
+        assert data["faixa_risco"] == "alto"
         assert data["modelo"] == "modelo_lgbm_v1.joblib"
 
         # Test model-info when model is loaded
@@ -90,3 +90,12 @@ def test_lifespan_e_predicao_com_modelo_real():
         assert data["faixa_risco"] in ("baixo", "médio", "alto")
 
 
+
+
+def test_faixas_de_risco_nos_cortes():
+    from credit_lens.api import _classificar_risco
+
+    assert _classificar_risco(0.059) == "baixo"
+    assert _classificar_risco(0.06) == "médio"
+    assert _classificar_risco(0.149) == "médio"
+    assert _classificar_risco(0.15) == "alto"

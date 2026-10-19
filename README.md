@@ -19,18 +19,13 @@ Avaliação em conjunto de teste holdout independente (15% da base, 46.127 clien
 | Modelo | ROC-AUC (Teste) | Gini (Teste) | KS Statistic (Teste) | PR-AUC | Brier Score | Status |
 |---|---|---|---|---|---|---|
 | **Regressão Logística** | 0.6811 | 0.3621 | 0.2667 | 0.1601 | 0.2256 | Baseline |
-| **LightGBM (Tuned 5-fold CV)** | **0.7093** | **0.4187** | **0.3097** | **0.1871** | **0.2031** | **Campeão** |
+| **LightGBM (Tuned 5-fold CV)** | **0.7093** | **0.4187** | **0.3097** | **0.1871** | **0.2031** | Bruto |
+| **LightGBM calibrado (isotônica)** | 0.7085 | 0.417 | 0.3086 | 0.1778 | 0.0705 | Usado na API |
 
 * **Validação Cruzada**: LightGBM obteve **CV ROC-AUC médio de 0.7002 ± 0.0036** ao longo dos 5 folds estratificados.
 * **Calibração:** os modelos são treinados com pesos de classe, então o score bruto (média ~0,45) não é probabilidade (taxa real ~8%). A calibração isotônica, ajustada na validação, leva a probabilidade média prevista a 8,05% (observada: 8,07%), com **Brier 0,2031 → 0,0705** e **ECE 0,346 → 0,003**, e ROC-AUC praticamente igual (0,7085). A API usa o modelo calibrado (`modelo_lgbm_v2.joblib`).
 * **Faixas de risco (API):** baixo < 6%, médio 6–15%, alto ≥ 15% de probabilidade calibrada (`CORTE_RISCO_BAIXO/ALTO` em `api.py`).
 * **Model Card Completo**: Veja hiperparâmetros, curvas e detalhes em [`docs/model_card.md`](docs/model_card.md).
-
----
-
-## 📈 Dashboard (Tableau Public)
-
-Exportação de dados agregados para BI com `make bi` (`scripts/exportar_para_bi.py`). Estrutura das páginas, valores de conferência e cuidados de interpretação em [`docs/dashboard.md`](docs/dashboard.md). Link público: _em breve_.
 
 ---
 
@@ -40,11 +35,12 @@ Exportação de dados agregados para BI com `make bi` (`scripts/exportar_para_bi
 flowchart TD
     A[data/raw: CSVs do Kaggle] -->|DuckDB SQL Aggregations| B[data/processed: dataset.parquet]
     B -->|split_estratificado 70/15/15| C[Treino & Validação Cruzada]
-    C -->|RandomizedSearchCV 5-fold| D[LightGBM Campeão: models/modelo_lgbm_v1.joblib]
+    C -->|RandomizedSearchCV 5-fold| D[LightGBM: models/modelo_lgbm_v1.joblib]
     C -->|Baseline| E[Regressão Logística: models/modelo_logistica_v1.joblib]
-    D -->|Avaliação: ROC-AUC, KS, Gini, Decis| F[models/metricas.json]
+    D -->|Calibração Isotônica| I[LightGBM Calibrado Campeão: models/modelo_lgbm_v2.joblib]
+    I -->|Avaliação: ROC-AUC, KS, Gini, Brier| F[models/metricas.json]
     B -->|Proxy temporal DAYS_BIRTH| G[Monitoramento PSI: reports/monitoramento.csv]
-    D -->|Lifespan Autoload| H[FastAPI REST API: /predict & /model-info]
+    I -->|Lifespan Autoload| H[FastAPI REST API: /predict & /model-info]
 ```
 
 ---
@@ -77,7 +73,7 @@ Baixe os 4 CSVs da competição [Home Credit Default Risk](https://www.kaggle.co
 # 1. Processa 307.511 linhas e 32 preditores em segundos via DuckDB
 make features
 
-# 2. Executa testes unitários e de integração (25 testes, >90% coverage)
+# 2. Executa testes unitários e de integração (34 testes, ~88% coverage)
 make test
 
 # 3. Treina o baseline de Regressão Logística

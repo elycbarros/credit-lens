@@ -7,6 +7,7 @@ name = "credit-lens"
 version = "0.1.0"
 description = "Risco de crédito de ponta a ponta: SQL + modelo + API + dashboard."
 requires-python = ">=3.10"
+keywords = ["credit-risk", "machine-learning", "lightgbm", "fastapi", "duckdb", "python"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

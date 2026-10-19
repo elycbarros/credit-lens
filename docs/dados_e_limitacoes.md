@@ -28,3 +28,10 @@
 - **Ausência de Datas de Calendário Reais**: O dataset original não fornece timestamps de calendário (usa dias relativos à aplicação). Por isso, o monitoramento populacional (PSI) e a partição temporal utilizam proxies simulados documentados (`DAYS_BIRTH` ou ordem relativa).
 - **Hipóteses Financeiras**: Quaisquer parâmetros de taxa de juros, custo de captação ou perda em caso de default (LGD) utilizados na matriz de confusão e no corte de decisão são **hipóteses didáticas e ilustrativas**.
 - **Finalidade do Projeto**: Este repositório é um portfólio acadêmico e técnico de engenharia de software e machine learning aplicado. **Não deve ser utilizado para decisões reais de concessão de crédito.**
+
+---
+
+## 4. Atributos pessoais e uso responsável
+
+O modelo usa **`DAYS_BIRTH`** (idade em dias relativos) e **`DAYS_EMPLOYED`** / **`DAYS_EMPLOYED_ANOMALO`** (tempo de emprego formal e indicador de ausência de vínculo) como preditores. A inclusão da idade e do tempo de vínculo profissional atua como proxy do ciclo de vida financeiro e da capacidade produtiva na base histórica. Em contrapartida, variáveis pessoais sensíveis presentes na base original do Kaggle — como **sexo (`CODE_GENDER`)**, **estado civil (`NAME_FAMILY_STATUS`)**, **filhos/dependentes (`CNT_CHILDREN`)** e **escolaridade (`NAME_EDUCATION_TYPE`)** — foram deliberadamente **excluídas** na montagem do dataset (`sql/99_dataset_final.sql`) para mitigar discriminação direta e concentrar a análise em capacidade financeira e histórico comportamental de crédito. Em uso real, seria necessária análise de viés entre grupos, base legal conforme a LGPD, validação independente do modelo e acompanhamento de desempenho por segmento. Este projeto é demonstrativo e não deve ser usado em decisões reais de crédito.
+

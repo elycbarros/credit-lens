@@ -2,10 +2,11 @@
 
 [![CI](https://github.com/elycbarros/credit-lens/actions/workflows/ci.yml/badge.svg)](https://github.com/elycbarros/credit-lens/actions)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://python.org)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.35%2B-FF4B4B.svg)](https://streamlit.io)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com)
 [![DuckDB](https://img.shields.io/badge/DuckDB-1.0%2B-FFF000.svg)](https://duckdb.org)
 
-Sistema de avaliação de **Risco de Crédito Ponta a Ponta**: da ingestão relacional com DuckDB ao deploy de API REST com FastAPI, passando por modelagem supervisionada (LightGBM vs. Regressão Logística), avaliação com métricas de crédito (ROC-AUC, KS, Gini) e monitoramento de drift populacional (PSI).
+Sistema de avaliação de **Risco de Crédito Ponta a Ponta**: da ingestão relacional com DuckDB ao deploy de API REST com FastAPI e Cockpit Analítico com Streamlit, passando por modelagem supervisionada (LightGBM vs. Regressão Logística), calibração isotônica, avaliação com métricas de crédito (ROC-AUC, KS, Gini), simulação de cutoff e monitoramento de drift populacional (PSI).
 
 > [!NOTE]
 > **Aviso de conformidade e uso ético:** Projeto acadêmico e demonstrativo para portfólio de engenharia de dados e machine learning utilizando dados públicos do [Home Credit Default Risk (Kaggle)](https://www.kaggle.com/c/home-credit-default-risk/data). **Não deve ser utilizado para decisões reais de crédito.** Consulte os detalhes em [`docs/dados_e_limitacoes.md`](docs/dados_e_limitacoes.md).
@@ -76,7 +77,7 @@ Baixe os 4 CSVs da competição [Home Credit Default Risk](https://www.kaggle.co
 # 1. Processa 307.511 linhas e 32 preditores em segundos via DuckDB
 make features
 
-# 2. Executa testes unitários e de integração (34 testes, ~88% coverage)
+# 2. Executa testes unitários e de integração (36 testes, ~88% coverage)
 make test
 
 # 3. Treina o baseline de Regressão Logística

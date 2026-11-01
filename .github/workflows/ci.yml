@@ -50,6 +50,7 @@ jobs:
       - name: Smoke test do container
         run: |
           docker run --rm -d --name cl-test -p 8000:8000 credit-lens:ci
-          sleep 5
+          sleep 10
+          docker logs cl-test
           curl --fail http://localhost:8000/health
           docker stop cl-test

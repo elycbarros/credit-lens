@@ -1,8 +1,8 @@
 # Credit-Lens 🔍
 
 [![CI](https://github.com/elycbarros/credit-lens/actions/workflows/ci.yml/badge.svg)](https://github.com/elycbarros/credit-lens/actions)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://credit-lens-ecb.streamlit.app)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://python.org)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.35%2B-FF4B4B.svg)](https://streamlit.io)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com)
 [![DuckDB](https://img.shields.io/badge/DuckDB-1.0%2B-FFF000.svg)](https://duckdb.org)
 
@@ -98,8 +98,10 @@ make bi
 
 ### 4. Executando o Dashboard Interativo (Streamlit)
 
+> 🌐 **Deploy no ar (Streamlit Community Cloud):** [credit-lens-ecb.streamlit.app](https://credit-lens-ecb.streamlit.app)
+
 ```bash
-# Inicia o Cockpit Interativo de Risco de Crédito no navegador (http://localhost:8501)
+# Inicia o Cockpit Interativo de Risco de Crédito localmente no navegador (http://localhost:8501)
 make dashboard
 ```
 

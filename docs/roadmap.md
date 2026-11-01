@@ -113,13 +113,13 @@ git init && git add . && git commit -m "chore: esqueleto Credit-Lens (fase 0)"
 
 ---
 
-## 🟡 Fase 7 — Dashboard Tableau Public (1–2 dias) — exportação pronta; falta montar e publicar no Tableau
-- ✅ `scripts/exportar_para_bi.py` (mesmo padrão do Power-Monitor): decis, métricas, PSI, importância → `bi/`.
-- ⬜ Páginas: **Performance** (decis/KS), **Risco por segmento**, **Monitoramento** (PSI), **Qualidade dos dados**.
-- ⬜ Parâmetro de ponto de corte no Tableau.
-- ⬜ Publicar (⚠️ público: só dados agregados) e linkar no README; completar `docs/dashboard.md` com valores de conferência.
+## ✅ Fase 7 — Dashboard Interativo & BI (Streamlit Cloud + Tableau)
+- ✅ `scripts/exportar_para_bi.py`: decis, métricas, PSI, importância → `bi/`.
+- ✅ Cockpit Interativo com 6 abas (Performance, Decis, Cutoff, PSI, Segmentos, Inferência Online).
+- ✅ Publicado no Streamlit Community Cloud: [`credit-lens-ecb.streamlit.app`](https://credit-lens-ecb.streamlit.app).
+- ✅ Valores de conferência e cuidados de governança em `docs/dashboard.md`.
 
-🎯 **Entrega:** link público do dashboard. Commit: `docs: dashboard`.
+🎯 **Entrega:** link público do dashboard integrado e ativo. Commit: `docs: dashboard no ar`.
 
 ---
 

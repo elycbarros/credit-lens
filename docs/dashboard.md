@@ -8,6 +8,8 @@ Camada analítica e de visualização do Credit-Lens. Os dados de entrada são g
 
 A solução nativa integrada ao repositório oferece interatividade completa, versionamento em código e deploy direto no Streamlit Community Cloud.
 
+> 🌐 **Deploy em Produção:** **[credit-lens-ecb.streamlit.app](https://credit-lens-ecb.streamlit.app)**
+
 ### Execução Local
 
 ```bash

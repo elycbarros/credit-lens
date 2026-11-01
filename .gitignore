@@ -4,6 +4,7 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .coverage
+coverage.xml
 htmlcov/
 .ruff_cache/
 
@@ -16,8 +17,7 @@ data/processed/*
 !data/processed/.gitkeep
 *.duckdb
 *.parquet
-models/*.joblib
-bi/*.csv
+# models/*.joblib e bi/*.csv versionados para deploy do Dashboard (Streamlit Cloud)
 
 # macOS / volumes externos
 .DS_Store

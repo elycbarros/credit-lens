@@ -1,0 +1,34 @@
+modelo,conjunto,metrica,valor
+Regressão logística,validação,roc_auc,0.677501380353968
+Regressão logística,teste,roc_auc,0.6810626327966125
+Regressão logística,validação,gini,0.355002760707936
+Regressão logística,teste,gini,0.362125265593225
+Regressão logística,validação,ks,0.25841067271424284
+Regressão logística,teste,ks,0.2667270441441974
+Regressão logística,validação,pr_auc,0.15243925017968563
+Regressão logística,teste,pr_auc,0.16007888366861278
+Regressão logística,validação,brier,0.22678364989398708
+Regressão logística,teste,brier,0.22560747939011966
+LightGBM,validação,roc_auc,0.7027585205969431
+LightGBM,teste,roc_auc,0.7093421953784809
+LightGBM,validação,gini,0.4055170411938862
+LightGBM,teste,gini,0.41868439075696173
+LightGBM,validação,ks,0.30063658528102544
+LightGBM,teste,ks,0.30967061791855366
+LightGBM,validação,pr_auc,0.1783076080305735
+LightGBM,teste,pr_auc,0.1870520988747872
+LightGBM,validação,brier,0.2047013204721202
+LightGBM,teste,brier,0.20314019998658925
+LightGBM,cv_5_folds,roc_auc,0.7002163339512851
+LightGBM (calibrado),teste,roc_auc,0.7085242484185742
+LightGBM (calibrado),teste,gini,0.4170484968371484
+LightGBM (calibrado),teste,ks,0.30855519540105086
+LightGBM (calibrado),teste,pr_auc,0.17781069956089543
+LightGBM (calibrado),teste,brier,0.07051679688627778
+LightGBM (calibrado),teste,ece,0.0026416182111010807
+Regressão logística (calibrado),teste,roc_auc,0.680857308547748
+Regressão logística (calibrado),teste,gini,0.3617146170954959
+Regressão logística (calibrado),teste,ks,0.26627591024518893
+Regressão logística (calibrado),teste,pr_auc,0.1536268309797777
+Regressão logística (calibrado),teste,brier,0.07170162277845368
+Regressão logística (calibrado),teste,ece,0.0033030006673545357

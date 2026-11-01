@@ -1,8 +1,10 @@
 # Credit-Lens 🔍
 
 [![CI](https://github.com/elycbarros/credit-lens/actions/workflows/ci.yml/badge.svg)](https://github.com/elycbarros/credit-lens/actions)
+[![Coverage](https://img.shields.io/badge/coverage-88%25-brightgreen.svg)](https://github.com/elycbarros/credit-lens/actions)
+[![Tests](https://img.shields.io/badge/tests-36%20passed-brightgreen.svg)](https://github.com/elycbarros/credit-lens/actions)
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://credit-lens-ecb.streamlit.app)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://python.org)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://github.com/elycbarros/credit-lens/actions)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com)
 [![DuckDB](https://img.shields.io/badge/DuckDB-1.0%2B-FFF000.svg)](https://duckdb.org)
 

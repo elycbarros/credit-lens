@@ -1,6 +1,6 @@
 # Roadmap — Credit-Lens
 
-Guia de execução para continuar no VS Code. Marque os itens conforme avançar; cada fase termina com um **commit** e **CI verde**.
+Guia de execução e controle de entregas do projeto.
 
 **Legenda:** ✅ pronto · ⬜ a fazer · 🎯 entrega da fase · ⚠️ cuidado
 
@@ -12,142 +12,113 @@ Guia de execução para continuar no VS Code. Marque os itens conforme avançar;
 cd /Volumes/KINGSTON/DEV2026/MAC/credit-lens
 python3 -m venv .venv && source .venv/bin/activate
 make install
-make test            # deve passar 7 testes
-git init && git add . && git commit -m "chore: esqueleto Credit-Lens (fase 0)"
+make test            # 36 testes passando (88.46% coverage)
 ```
 
-- Extensões: **Python**, **Pylance**, **Ruff**, **SQLTools** (ou "DuckDB SQL Tools"), **Jupyter**, **Docker**, **GitHub Actions**.
 - Interpretador: `Cmd+Shift+P` → *Python: Select Interpreter* → `.venv`.
 - Testes: ícone de frasco (Testing) → pytest já configurado via `pytest.ini`.
-- ⚠️ Projeto está em volume externo (KINGSTON): se o git reclamar de `index.lock`, ejete/remonte o volume ou mova o repo para o disco interno.
-- Criar repo vazio no GitHub e: `git remote add origin ... && git push -u origin main`.
 
 ---
 
 ## ✅ Fase 0 — Setup
 - ✅ Estrutura de pastas, `Makefile`, `requirements*.txt`, `pytest.ini`, `Dockerfile`, CI.
-- ✅ `evaluate.py` (Gini, KS, AUC, PR-AUC, Brier), `monitor.py` (PSI), `/health`, 7 testes.
-- ⬜ Primeiro push e conferir CI verde no GitHub.
+- ✅ `evaluate.py` (Gini, KS, AUC, PR-AUC, Brier), `monitor.py` (PSI), `/health`.
+- ✅ CI verde no GitHub Actions.
 
 ---
 
-## ⬜ Fase 1 — Dados e SQL (1–2 dias)
+## ✅ Fase 1 — Dados e SQL
 **Objetivo:** 1 linha por cliente, sem duplicidade e sem vazamento.
+- ✅ Ingestão analítica DuckDB em `src/credit_lens/features.py`.
+- ✅ Agregações SQL multi-tabelas (`sql/01_bureau_agg.sql`, `sql/02_prev_app_agg.sql`, `sql/03_installments_agg.sql`).
+- ✅ Dataset final consolidado em Parquet (307.511 registros, 32 preditores).
+- ✅ Testes de integridade e unicidade de chave primária em `tests/test_dataset.py`.
 
-1. ⬜ Baixar a base do Kaggle (Home Credit Default Risk) e colocar em `data/raw/`:
-   `application_train.csv`, `bureau.csv`, `previous_application.csv`, `installments_payments.csv`.
-2. ⬜ Implementar `src/credit_lens/features.py`:
-   - criar `data/processed/credit.duckdb`;
-   - `read_csv_auto` de cada CSV como tabela;
-   - executar `sql/01..03` como `CREATE TABLE b_agg/p_agg/i_agg AS ...`;
-   - executar `sql/99_dataset_final.sql` e exportar `data/processed/dataset.parquet`.
-3. ⬜ Testar o SQL no VS Code antes de automatizar (rodar cada `.sql` manualmente).
-4. ⬜ Escrever `tests/test_dataset.py` (marcado `@pytest.mark.skipif` se não houver dados):
-   - `SK_ID_CURR` único;
-   - nº de linhas = `application_train`;
-   - `TARGET` só 0/1.
-5. ⬜ Revisar vazamento: nenhuma feature usa informação posterior à decisão do empréstimo atual (ex.: em `installments_payments`, filtrar parcelas do próprio contrato atual se existirem).
-6. ⬜ Completar `docs/dados_e_limitacoes.md` com shape final, % de nulos e taxa de inadimplência.
-
-🎯 **Entrega:** `make features` gera o parquet; testes de unicidade passam. Commit: `feat: dataset via DuckDB`.
+🎯 **Entrega:** `make features` gera o parquet; testes de unicidade passam.
 
 ---
 
-## ⬜ Fase 2 — EDA enxuta (1 dia)
-- ⬜ `notebooks/01_eda.ipynb` com 5–6 gráficos que **justificam decisões**:
+## ✅ Fase 2 — EDA Enxuta
+- ✅ `notebooks/01_eda.ipynb` com análises que justificam decisões:
   - desbalanceamento do alvo (~8%);
-  - nulos por coluna (decidir imputação);
-  - `DAYS_EMPLOYED = 365243` (valor sentinela → NaN + flag);
-  - distribuição de renda/crédito (cauda longa → log);
-  - taxa de inadimplência por faixa de idade e por `bureau_n_creditos`.
-- ⬜ Limpar saídas do notebook antes do commit (ou usar `nbstripout`).
+  - nulos por coluna e estratégias de imputação;
+  - sentinela `DAYS_EMPLOYED = 365243` tratado com flag anômala;
+  - distribuições de renda e crédito;
+  - inadimplência por faixas de idade e bureau.
 
-🎯 **Entrega:** conclusões escritas em Markdown no notebook. Commit: `docs: EDA`.
-
----
-
-## ⬜ Fase 3 — Modelagem (2–3 dias)
-1. ⬜ `split.py`: split estratificado treino/validação/teste (ex.: 70/15/15), `random_state` fixo; **teste só no final**.
-2. ⬜ Pré-processamento em `Pipeline` (imputação, escala para a logística, codificação de categóricas); ajustar **só no treino**.
-3. ⬜ **Baseline:** `LogisticRegression` com `class_weight` (comparar com/sem).
-4. ⬜ **Modelo principal:** `HistGradientBoostingClassifier` (sem dependência extra) ou LightGBM.
-5. ⬜ Validação cruzada estratificada (5 folds) + busca enxuta de hiperparâmetros (`RandomizedSearchCV`, poucas iterações).
-6. ⬜ `train.py`: salvar `models/modelo_vX.joblib` + `models/metricas.json` (⚠️ modelo fora do Git).
-7. ⬜ Importância de variáveis (permutation importance; SHAP opcional).
-
-🎯 **Entrega:** `make train` reprodutível. Commit: `feat: treino logística e GBM`.
+🎯 **Entrega:** Conclusões e decisões documentadas.
 
 ---
 
-## ⬜ Fase 4 — Avaliação e validação (1–2 dias)
-- ⬜ Rodar `resumo_metricas` em validação e teste para os dois modelos.
-- ⬜ Tabela por **decis de score** (n, inadimplência %, lift acumulado) em `evaluate.py` + teste.
-- ✅ Curva de calibração e Brier; calibração isotônica aplicada (Brier 0,2031 → 0,0705).
-- ⬜ Ponto de corte: curva aprovação × inadimplência esperada, com custos **fictícios e rotulados como hipótese**.
-- ⬜ Sanidade: AUC esperado ~0,73–0,79; **AUC > 0,85 = suspeitar de vazamento**.
-- ⬜ Preencher `docs/model_card.md` com números reais.
+## ✅ Fase 3 — Modelagem
+- ✅ `split.py`: Split estratificado treino/validação/teste (70/15/15) com seed fixa.
+- ✅ Pré-processamento em pipeline com imputação e encoders.
+- ✅ Baseline de Regressão Logística com pesos balanceados (`modelo_logistica_v1.joblib`).
+- ✅ LightGBM com tuning via RandomizedSearchCV 5-fold CV (`modelo_lgbm_v1.joblib`).
+- ✅ Artefatos versionados e métricas salvas em `models/metricas.json`.
 
-🎯 **Entrega:** `reports/avaliacao.md` ou seção no README com tabela comparativa. Commit: `feat: avaliação e decis`.
-
----
-
-## ⬜ Fase 5 — Monitoramento (1–2 dias)
-- ⬜ Definir partições simuladas (ex.: ordenar por `DAYS_BIRTH` ou `DAYS_DECISION` em blocos) e **documentar que o drift é simulado**.
-- ⬜ PSI por variável e do score (referência = treino), com classificação estável/atenção/ação.
-- ⬜ Relatório `reports/monitoramento.csv` (+ HTML estático opcional).
-- ⬜ Regra de retreino documentada: PSI do score > 0,25 ou queda de KS/AUC além da tolerância definida.
-- ⬜ Testes extras em `test_monitor.py` (variável categórica, bins com poucos casos).
-
-🎯 **Entrega:** `make monitor`. Commit: `feat: monitoramento PSI`.
+🎯 **Entrega:** `make train` e `make train-logistica` reprodutíveis.
 
 ---
 
-## ⬜ Fase 6 — API, Docker e esteira (1–2 dias)
-- ⬜ `api.py`: `POST /predict` (schema pydantic, validação, retorna probabilidade e faixa de risco), `GET /model-info` (versão, data, métricas).
-- ⬜ Carregar o modelo no startup; erro claro se ausente.
-- ⬜ Testes de contrato (entrada inválida → 422; saída entre 0 e 1).
-- ⬜ `docker build -t credit-lens . && docker run -p 8000:8000 credit-lens`; testar em `/docs`.
-- ⬜ CI: adicionar passo de build da imagem.
+## ✅ Fase 4 — Avaliação, Validação e Calibração
+- ✅ Métricas consolidadas: ROC-AUC, KS, Gini, PR-AUC e Brier Score.
+- ✅ Tabela de decis de score com taxa de inadimplência e lift acumulado.
+- ✅ **Calibração Isotônica:** Probabilidades alinhadas à taxa real observada (Brier 0.2031 → 0.0705, ECE 0.0026).
+- ✅ Varredura de pontos de corte com tradeoff de aprovação vs. inadimplência.
+- ✅ Documentação completa em `docs/model_card.md` com números reais.
 
-🎯 **Entrega:** API responde localmente e em container. Commit: `feat: API de scoring`.
-
----
-
-## ✅ Fase 7 — Dashboard Interativo & BI (Streamlit Cloud + Tableau)
-- ✅ `scripts/exportar_para_bi.py`: decis, métricas, PSI, importância → `bi/`.
-- ✅ Cockpit Interativo com 6 abas (Performance, Decis, Cutoff, PSI, Segmentos, Inferência Online).
-- ✅ Publicado no Streamlit Community Cloud: [`credit-lens-ecb.streamlit.app`](https://credit-lens-ecb.streamlit.app).
-- ✅ Valores de conferência e cuidados de governança em `docs/dashboard.md`.
-
-🎯 **Entrega:** link público do dashboard integrado e ativo. Commit: `docs: dashboard no ar`.
+🎯 **Entrega:** Model Card completo e modelos calibrados (`modelo_lgbm_v2.joblib`).
 
 ---
 
-## ⬜ Fase 8 — Vitrine (1 dia)
-- ⬜ README final: pergunta de negócio, dados, **resultados reais**, como reproduzir, limitações, link do dashboard.
-- ⬜ Model card completo + seção de vieses e uso responsável.
-- ⬜ Badges (CI, cobertura), print/GIF do dashboard, tag `v1.0.0` e release.
-- ⬜ Atualizar currículo/LinkedIn **só com o que foi de fato entregue**.
+## ✅ Fase 5 — Monitoramento (PSI)
+- ✅ Cálculo do Population Stability Index (PSI) em `src/credit_lens/monitor.py`.
+- ✅ Partições temporais simuladas para análise de drift.
+- ✅ Regras e convenção de mercado (<0.10 estável, 0.10–0.25 atenção, >0.25 ação).
+- ✅ Relatório em `reports/monitoramento.csv` e suíte de testes em `tests/test_monitor.py`.
+
+🎯 **Entrega:** `make monitor`.
 
 ---
 
-## Critérios de aceite (v1.0)
-- [ ] `make install && make features && make train && make test` roda do zero.
-- [ ] Números do README = números gerados pelo código.
-- [ ] Testes: chave única, KS/Gini, PSI, contrato da API.
-- [ ] CI verde; imagem Docker constrói.
-- [ ] Model card e limitações presentes; dashboard publicado.
+## ✅ Fase 6 — API REST & Docker
+- ✅ API FastAPI em `src/credit_lens/api.py`: `POST /predict`, `GET /health`, `GET /model-info`.
+- ✅ Validação de schemas Pydantic e categorização em faixas de risco (baixo, médio, alto).
+- ✅ Startup com lifespan carregando automaticamente o modelo calibrado.
+- ✅ Container `Dockerfile` com suporte a OpenMP (`libgomp1`) para LightGBM.
+- ✅ Testes de contrato e smoke test do container no CI.
 
-## Cronograma sugerido (ritmo parcial)
+🎯 **Entrega:** API respondendo localmente (`make api`) e em container.
 
-| Semana | Fases |
-|---|---|
-| 1 | 1 e 2 |
-| 2 | 3 e 4 |
-| 3 | 5 e 6 |
-| 4 | 7 e 8 |
+---
 
-> **Corte de escopo, se apertar:** entregar v1.0 até a Fase 5 + README (já cobre classificação, validação e monitoramento); Fases 6 e 7 viram v1.1.
+## ✅ Fase 7 — Cockpit Interativo em Streamlit & BI
+- ✅ Exportador `scripts/exportar_para_bi.py` gerando dados agregados em `bi/`.
+- ✅ Aplicação interativa em `src/credit_lens/dashboard.py` com 6 visões analíticas:
+  1. Performance & Curva ROC Comparativa.
+  2. Ordenação por Decis (Scorecard) e KS Máximo.
+  3. Simulador de Política de Concessão (Cutoff Slider & Impacto Financeiro).
+  4. Monitoramento Populacional (PSI) com semáforo de estabilidade.
+  5. Segmentos & Calibração (faixa etária e faixas de crédito).
+  6. Calculadora de Scoring Online com inferência em tempo real.
+- ✅ Deploy público ativo no Streamlit Community Cloud: [`credit-lens-ecb.streamlit.app`](https://credit-lens-ecb.streamlit.app).
 
-## Convenções de commit
-`feat:` funcionalidade · `fix:` correção · `docs:` documentação · `test:` testes · `chore:` infra. Um commit por tarefa concluída, mensagens curtas.
+🎯 **Entrega:** Cockpit no ar e documentado em `docs/dashboard.md`.
+
+---
+
+## ✅ Fase 8 — Vitrine e Release v1.0.0
+- ✅ `README.md` completo com resultados reais, diagrama arquitetural, preview do dashboard e badges.
+- ✅ Limitações éticas e de conformidade declaradas em `docs/dados_e_limitacoes.md`.
+- ✅ 36 testes automatizados passando (100%) com 88.46% de cobertura.
+- ✅ Tag de versão `v1.0.0` registrada no Git.
+
+---
+
+## Critérios de aceite (v1.0) — Todos Aprovados
+- [x] `make install && make features && make train && make test` roda do zero.
+- [x] Números do README = números gerados pelo código.
+- [x] Testes: chave única, KS/Gini, PSI, contrato da API, carregamento do dashboard.
+- [x] CI verde (4/4); imagem Docker constrói e passa no smoke test.
+- [x] Model card e limitações presentes; dashboard publicado.

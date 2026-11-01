@@ -495,7 +495,7 @@ def tab_simulador_corte(dados: dict[str, pd.DataFrame], modelo_selecionado: str)
 def tab_monitoramento_psi(dados: dict[str, pd.DataFrame]):
     """Aba 4: Monitoramento de estabilidade populacional (PSI)."""
     st.subheader("4. Monitoramento Contínuo & Estabilidade Populacional (PSI)")
-    st.caption("Acompanhamento de drift de variáveis entre o baseline de treinamento e a esteira de produção.")
+    st.caption("Acompanhamento de drift de variáveis entre o baseline de treinamento e a partição de esteira (simulada).")
 
     df_psi = dados.get("psi", pd.DataFrame())
     if df_psi.empty:

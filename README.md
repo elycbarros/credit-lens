@@ -100,6 +100,10 @@ make bi
 
 > 🌐 **Deploy no ar (Streamlit Community Cloud):** [credit-lens-ecb.streamlit.app](https://credit-lens-ecb.streamlit.app)
 
+<p align="center">
+  <img src="docs/assets/dashboard_preview.png" alt="Visão Geral do Cockpit Interativo Credit-Lens" width="850">
+</p>
+
 ```bash
 # Inicia o Cockpit Interativo de Risco de Crédito localmente no navegador (http://localhost:8501)
 make dashboard

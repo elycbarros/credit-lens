@@ -32,6 +32,7 @@ source = ["src"]
 omit = [
     "src/credit_lens/train.py",
     "src/credit_lens/features.py",
+    "src/credit_lens/dashboard.py",
 ]
 
 [tool.coverage.report]

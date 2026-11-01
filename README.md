@@ -41,6 +41,9 @@ flowchart TD
     I -->|Avaliação: ROC-AUC, KS, Gini, Brier| F[models/metricas.json]
     B -->|Proxy temporal DAYS_BIRTH| G[Monitoramento PSI: reports/monitoramento.csv]
     I -->|Lifespan Autoload| H[FastAPI REST API: /predict & /model-info]
+    F --> J[Exportação Agregada: bi/*.csv]
+    G --> J
+    J --> K[Streamlit Cockpit: make dashboard]
 ```
 
 ---
@@ -87,9 +90,27 @@ make train
 
 # 5. Gera relatório de monitoramento populacional (PSI)
 make monitor
+
+# 6. Exporta dados agregados para BI
+make bi
 ```
 
-### 4. Executando a API REST
+### 4. Executando o Dashboard Interativo (Streamlit)
+
+```bash
+# Inicia o Cockpit Interativo de Risco de Crédito no navegador (http://localhost:8501)
+make dashboard
+```
+
+O dashboard contempla:
+- **Performance e Curva ROC:** Comparativo LightGBM calibrado vs. Regressão logística.
+- **Ordenação por Decis e KS:** Concentração de maus e poder discriminatório.
+- **Simulador de Cutoff:** Slider de ponto de corte calculando taxa de aprovação, inadimplência e impacto financeiro.
+- **Monitoramento PSI:** Gráfico semafórico de drift das variáveis e regras de retreino.
+- **Segmentos e Calibração:** Inadimplência observada vs. score médio previsto.
+- **Calculadora Online de Score:** Inferência em tempo real com faixas de risco.
+
+### 5. Executando a API REST
 
 ```bash
 # Inicia a API FastAPI localmente
@@ -135,12 +156,17 @@ credit-lens/
 │   ├── features.py        # Ingestão e pipeline DuckDB -> Parquet
 │   ├── split.py           # Split estratificado e temporal
 │   ├── train.py           # Treinamento com Scikit-Learn e LightGBM
+│   ├── calibracao.py     # Calibração isotônica de probabilidades
 │   ├── evaluate.py        # Métricas de crédito: Gini, KS e Tabela de Decis
 │   ├── monitor.py         # Cálculo de Population Stability Index (PSI)
-│   └── api.py             # API REST FastAPI com validação Pydantic
+│   ├── api.py             # API REST FastAPI com validação Pydantic
+│   └── dashboard.py       # Painel analítico interativo em Streamlit + Plotly
+├── bi/                    # Tabelas analíticas agregadas para BI e Dashboard
+├── scripts/               # Scripts utilitários (exportar_para_bi.py)
 ├── tests/                 # Suíte de testes automatizados com Pytest
-├── docs/                  # Documentação, Model Card e Limitações
+├── docs/                  # Documentação, Model Card, Dashboard e Limitações
 ├── notebooks/             # Análise Exploratória de Dados (01_eda.ipynb)
+├── streamlit_app.py       # Ponto de entrada do Streamlit Cloud
 ├── Makefile               # Comandos de automação do ciclo de desenvolvimento
 └── pyproject.toml         # Configuração de build, linters e cobertura
 ```

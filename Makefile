@@ -1,7 +1,7 @@
 PY ?= python3
 export PYTHONPATH := src:$(PYTHONPATH)
 
-.PHONY: bi install test lint lint-fix features train monitor api api-docker
+.PHONY: bi dashboard install test lint lint-fix features train monitor api api-docker
 
 install:
 	$(PY) -m pip install -r requirements-dev.txt
@@ -35,3 +35,6 @@ api-docker:
 
 bi:
 	$(PY) scripts/exportar_para_bi.py
+
+dashboard:
+	$(PY) -m streamlit run streamlit_app.py
